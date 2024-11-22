@@ -33,3 +33,9 @@ mvn clean package
 ```
 
 Genera el archivo **_.jar_** de un proyecto. Si todo compila bien terminaria con un **BUILD SUCCESS**
+
+```bash
+mvn clean package -DskipTests
+```
+
+Genera el archivo **_.jar_** de un proyecto. Este comando se salta las pruebas de conexion.
