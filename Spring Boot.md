@@ -3,14 +3,16 @@
 **Índice**
 
 1. [Introduccion a Spring y Spring Boot](#id1)
-   - [Que es un Bean?](#id1.1)
+   - [1.1 Que es un Bean?](#id1.1)
+   - [1.2 Como funciona Hibernate(ORM - Object Relational Mapping)](#id1.2)
+   - [1.3 Que es JPA?](#id1.3)
 2. [Configuracion de application.properties](#id2)
    - [2.1 Conectar la aplicación Spring Boot a MySQL con **_application.yml_**](#id2.1)
    - [2.2 Conectar la aplicación Spring Boot a PostgreSQL con **_application.yml_**](#id2.2)
    - [2.3 Usar perfiles en Spring Boot (MySQL y PostgreSQL)](#id2.3)
    - [2.4 Conectar la aplicación Spring Boot a PostgreSQL y MySQL](#id2.4)
    - [2.5 Perfiles](#id2.5)
-3. [Consultas a la Base de datos](#id3)
+3. [JPA,JDBC y SQL queries](#id3)
 
 <div id='id1' />
 
@@ -21,6 +23,52 @@
 ### 1.1 Que es un Bean?
 
 Es objeto unico que tiene ciertas caracteristicas que puede ser inyectado en cualquier lugar que desees. Se hace a travez de las anotaciones.
+
+<div id='id1.2' />
+
+### 1.1 Como funciona Hibernate (ORM - Object Relational Mapping)
+
+#### `Hibernate`
+
+(**_ORM - Relational Mapping_**)(**_Mapeo Objeto-Relacional_**) Hibernate es una libreria para mapear clases de Java en tablas de una base de datos relasional, disminuyendo considerablemente la cantidad de codigo SQL para interactuar con la base de datos.
+
+Para hacer uso de Hibernate solo tienes que declarar los metodos getter y setter para cada campo y el se encarga del resto.
+
+`Que hace`
+
+Hibernate mapea los atributos de una base de datos tradicional con el modelo de objetos de una aplicación. Esto se logra mediante archivos declarativos o anotaciones en los beans de las entidades.
+
+`Para qué sirve`
+
+Hibernate optimiza el flujo de trabajo evitando código repetitivo.
+
+`Cómo funciona`
+
+Hibernate utiliza un lenguaje de consulta potente (HQL) que se parece a SQL, pero es orientado a objetos.
+
+`Quién lo creó`
+
+Gavin King y colegas de Cirrus Technologies crearon Hibernate en 2001 como alternativa al estilo de programación de EJB2.
+
+`Cómo se relaciona con JPA`
+
+JPA es una especificación estándar de Java que define un conjunto de interfaces y anotaciones para el mapeo objeto-relacional. Hibernate es una implementación concreta de esta especificación.
+
+Hibernate y Spring son dos herramientas complementarias que se pueden utilizar juntas o separadas para desarrollar aplicaciones empresariales.
+
+---
+
+<div id='id1.3' />
+
+#### 1.3 Que es JPA?
+
+JPA (Java Persistence API) es una API que permite gestionar la persistencia de datos y la correlación de objetos en Java. JPA es una especificación estándar que se basa en el modelo de programación Java y puede funcionar en entornos Java EE o Java SE.
+
+JPA permite: Asignar objetos Java a tablas de bases de datos relacionales, Realizar consultas, Manejar transacciones, Recuperar objetos sin necesidad de grabar consultas SQL específicas.
+
+JPA funciona mediante anotaciones o XML para correlacionar objetos con una o más tablas de una base de datos. Para usar JPA, se necesita definir una Unidad de Persistencia (Persistence Unit) en un archivo XML llamado persistence.xml.
+
+Una implementación popular de JPA es Hibernate ORM, que ofrece funcionalidades adicionales y un conjunto completo de herramientas para trabajar con persistencia de datos en Java.
 
 <div id='id2' />
 
@@ -308,7 +356,7 @@ spring:
 
 <div id='id3' />
 
-## 3. Consultas a la base de datos
+## 3. [JPA,JDBC y SQL queries]
 
 ```java
 @Repository
