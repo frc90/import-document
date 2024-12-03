@@ -105,7 +105,7 @@ public class User implements UserDetails {
 ```java
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+    Optional<User> findUserByEmail(String email);
 }
 ```
 
@@ -175,7 +175,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 **_jjwt-jackson_** es para la serializacion
 
-7. Creamos el filtro del servicio para JWT y le pasamos el **_secret key_** del algun **_secret key generator_** como metodo de prueba, en el package **_config_**.
+7. Creamos el filtro del servicio para JWT y le pasamos el **_secret key_** del algun **_secret key generator_** como metodo de prueba, en el package **_config_** creamos la clase **_JwtService_**.
 
 ```java
 @Service
@@ -217,6 +217,46 @@ public class JwtService {
 
     private Date getExpiration(String token) {
         return getClaim(token, Claims::getExpiration);
+    }
+}
+```
+
+8. Generamos el token en la clase **_JwtService_**
+
+```java
+@Service
+public class JwtService {
+    ...
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
+    }
+
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return Jwts.builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .signWith(getSignIngKey(), SignatureAlgorithm.ES256)
+                .compact();
+    }
+    ...
+}
+```
+
+9. Creamos **_AppConfig_**
+
+```java
+@Configuration
+@RequiredArgsConstructor
+public class AppConfig {
+
+    private final UserRepository userRepository;
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> userRepository.findUserByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }
 ```
