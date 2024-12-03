@@ -244,7 +244,7 @@ public class JwtService {
 }
 ```
 
-9. Creamos **_AppConfig_**
+9. Creamos **_AppConfig_** dentro de el package **_config_**.
 
 ```java
 @Configuration
@@ -257,6 +257,57 @@ public class AppConfig {
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findUserByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+}
+```
+
+10. Creamos **_SecurityConfig_** dentro de el package **_config_**.
+
+**_nota:_** **_`@EnableWebSecurity`_** es importante porque estamos habilitando seguridades dentro de nuestra **_ApiRestfull_**.
+
+Aca es donde vamos a lanzar nuestro filtro de **_JwtFilter_**
+
+```java
+@ConcreteProxy
+@EnableWebSecurity
+@RequiredArgsConstructor
+@EnableMethodSecurity
+public class SecurityConfig {
+    private final JwtFilter jwtFilter;
+    private final AuthenticationProvider authenticationProvider;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return httpSecurity.build();
+    }
+}
+```
+
+En **_AppConfig_** creamos los **_`@Bean`_** **_authenticatorProvider_** y **_passwordEncoder_**
+
+```java
+...
+public class AppConfig {
+    ...
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
 ```
