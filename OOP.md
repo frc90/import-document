@@ -1,10 +1,10 @@
 # OOP (Programacion orientada a objetos)
 
-La programacion orientada da objetos **(OOP)** es un paradigma de programacion imperativo.
+La programacion orientada da objetos **(OOP)** es un paradigma de **_programacion imperativo_**.
 Basado en que:
 
 - Todo es un "**objeto**".
-- La solucion de saba en la interaccion entre ellos.
+- La solucion se basa en la interaccion entre ellos.
 - Se intenta modelar un subconjunto de la realidad.
 
 > **Resumen**: La solucion en el paradigma orientado a objetos va a ser dado por la interaccion de los objetos y la forma que se comunican entre si
