@@ -311,3 +311,69 @@ public class AppConfig {
     }
 }
 ```
+
+11. Creamos **_AuthenticationController_** con los endpoint para registrar y authenticar usuarios. En el package **_/controllers_** creamos el **_AuthenticationController_**.
+
+```java
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthenticationController {
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){
+        return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthenticationRequest request){
+        return ResponseEntity.ok(authService.authenticate(request));
+    }
+}
+```
+
+Para continuar con las buenas practicas en el mismo paquete se crea otro paquete llamado **_`.controllers.models`_**. Dentro creamos varias clases importantes.
+
+- **_AuthenticationRequest_** ()
+- **_RegisterRequest_** ()
+- **_AuthResponse_** ()
+
+**AuthenticationRequest**
+
+```java
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthenticationRequest {
+    private String email;
+    private String password;
+}
+```
+
+**RegisterRequest**
+
+```java
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class RegisterRequest {
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+}
+```
+
+**AuthResponse**
+
+```java
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthResponse {
+    private String token;
+}
+```
