@@ -377,3 +377,70 @@ public class AuthResponse {
     private String token;
 }
 ```
+
+12. Creamos el servicio para finalizar con la authentication. En el paquete **_.services_** creamos la **_interface_** -> **_AuthService_**
+
+**_AuthService_**
+
+```java
+public interface AuthService {
+    AuthResponse register(RegisterRequest request);
+    AuthResponse authenticate(AuthenticationRequest request);
+}
+```
+
+Para continuar con las buenas practicas en el mismo package creamos la implementacion del servicio con la clase -> **_AuthServiceImpl_** que implemente a **_AuthService_**.
+
+> **_AuthServiceImpl_** implements **_AuthService_**
+
+```java
+@Service
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
+
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+
+    @Override
+    public AuthResponse register(RegisterRequest request) {
+        var user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .build();
+        userRepository.save(user);
+        var jwtToken = jwtService.generateToken(user);
+        return AuthResponse.builder().token(jwtToken).build();
+    }
+
+    @Override
+    public AuthResponse authenticate(AuthenticationRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        var user = userRepository.findUserByEmail(request.getEmail()).orElseThrow();
+        var jwtToken = jwtService.generateToken(user);
+        return AuthResponse.builder().token(jwtToken).build();
+    }
+}
+```
+
+**Detalle importante:** necesitaremos del `@Bean` **_AuthenticationManager_** de **_Spring_** para terminar de configurar todo en el servicio.
+
+```java
+...
+public class AppConfig {
+    ...
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+}
+```
