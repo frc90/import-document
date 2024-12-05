@@ -4,6 +4,7 @@
 
 1. [Introduccion a Spring Security](#id1)
 2. [Spring Security](#id2)
+   - [Listas blancas (white list)](#id2.1)
 
 <div id='id1' />
 
@@ -441,6 +442,58 @@ public class AppConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+}
+```
+
+Con esto ya quedaria todo configurado y funcionando.
+
+<div id='id1' />
+
+## Listas blancas (white list)
+
+Son los **_endpoin_** que se puede exponer a cualquier usuario sin necesidad de ser autenticado o autorizado en la aplicacion.
+
+En la clase -> **_SecurityConfig_** creamos el listado de los endpoint que vamos acceder sin estar autenticados llamados **_White List_**.
+
+**config/SecurityConfig**
+
+```java
+...
+public class SecurityConfig {
+    ...
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        ...
+        auth.requestMatchers("") // ***before***
+        auth.requestMatchers(publicEndpoints()) // ***white list***
+        ...
+    }
+
+
+    private RequestMatcher publicEndpoints() {
+        return new OrRequestMatcher(
+                new AntPathRequestMatcher("/api/greeting/helloWorldPublic")
+        );
+    }
+}
+```
+
+**controllers/HelloController**
+
+```java
+@RestController
+@RequestMapping("/api/greeting")
+public class HelloController {
+
+    @GetMapping("/helloWorldPublic")
+    public String hello(){
+        return "Hello World";
+    }
+
+    @GetMapping("/helloWorldProtected")
+    public String helloProtected(){
+        return "Hello World protected";
     }
 }
 ```
