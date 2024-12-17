@@ -9,3 +9,7 @@
 - 5. Maven && Gradle.md
 - 6. Spring Boot.md
 - 7. Docker.md
+- 8. Estimacion de tiempo.md
+- 9. Jwt.md
+- 10. Spring Security.md
+- 11. Entendiendo JPA
