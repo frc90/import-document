@@ -12,4 +12,4 @@
 - 8. Estimacion de tiempo.md
 - 9. Jwt.md
 - 10. Spring Security.md
-- 11. Entendiendo JPA
+- 11. JPA y Hibernate.md
