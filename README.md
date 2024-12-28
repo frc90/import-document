@@ -1,4 +1,4 @@
-# Resumenen
+# Resumen
 
 **Índice**
 
@@ -13,3 +13,6 @@
 - 9. Jwt.md
 - 10. Spring Security.md
 - 11. JPA y Hibernate.md
+- 12. Tuplas.md
+
+<img src="img/readme/road map.gif" alt="Road map to developer"/>
