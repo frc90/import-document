@@ -13,6 +13,8 @@
 - 9. Jwt.md
 - 10. Spring Security.md
 - 11. JPA y Hibernate.md
-- 12. Tuplas.md
+- 12. Threads.md
+- 13. Kafka.md
+- 14. Validaciones y manejo de exepciones.md
 
 <img src="img/readme/road map.gif" alt="Road map to developer"/>
