@@ -16,5 +16,6 @@
 - 12. Threads.md
 - 13. Kafka.md
 - 14. Validaciones y manejo de exepciones.md
+- 15. SQL.md
 
 <img src="img/readme/road map.gif" alt="Road map to developer"/>
