@@ -32,7 +32,7 @@ Los **_hilos_** permiten la ejecuccion de varias partes de un programa al mismo 
 
 ### Ciclo de vida de un hilo
 
-<img src="img/hilos/ciclo de vide de los hilos.png" alt="Ciclo de vida" />
+<img src="img/ciclo de vide de los hilos.png" alt="Ciclo de vida" />
 
 Por herencia
 

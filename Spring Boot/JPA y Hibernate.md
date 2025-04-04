@@ -61,7 +61,7 @@ public class Club {
 }
 ```
 
-**nota:** Java trabaja las propiedades de las clases como **_Camelcase_**, cuando se pasa a la **DB** pasaria con un quion bajo.
+**nota:** Java trabaja las propiedades de las clases como **_Camelcase_**, cuando se pasa a la **DB** pasaria con un guion bajo.
 
 **eg.:**
 
@@ -121,7 +121,7 @@ public class Club {
 
 Propiedades de **_@OneToOne_**
 
-- targetEntity = Club.class -->> la entidad con la relasion de la clave foranea
+- targetEntity = Coach.class -->> la entidad con la relasion de la clave foranea
 
 - cascade = -->> comportaminto en cascada
   - CascadeType.REMOVE
@@ -147,7 +147,7 @@ Si se quiere cambiar el nombre de la clave foranea se pondria esta anotacion **@
 public class Club {
     ...
     @OneToOne(
-            targetEntity = Club.class,
+            targetEntity = Coach.class,
             cascade = CascadeType.PERSIST
     )
     @JoinColumn(name = "id_coach")

@@ -37,7 +37,7 @@ Servidores físicos
 - No hay aislamiento natural entre aplicaciones, lo que puede generar conflictos y requiere configuraciones personalizadas para evitar problemas.
 
 ![<Server>](mi-imagen-genial.png)
-<img src="img/docker/server.png" alt="Server" />
+<img src="img/server.png" alt="Server" />
 
 ### 1.2 Maquinas vistuales
 
@@ -53,7 +53,7 @@ Máquinas virtuales
   Se crea aislamiento entre máquinas, pero esto conlleva un mayor consumo de recursos.
 
 ![<Server>](mi-imagen-genial.png)
-<img src="img/docker/virtual machine.png" alt="virtual machine" />
+<img src="img/virtual machine.png" alt="virtual machine" />
 
 NOTA: Las maquinas virtules y el hipervisor virtualizan el hardware los contenedores virtualizan a nivel sistema operativo.
 
@@ -68,7 +68,7 @@ Contenedores
 - Son livianos porque no requieren un sistema operativo completo por contenedor; utilizan el kernel del host y agregan solo bibliotecas y herramientas específicas.
 
 ![<Server>](mi-imagen-genial.png)
-<img src="img/docker/contenedor.png" alt="contenedor" />
+<img src="img/contenedor.png" alt="contenedor" />
 
 <div id='id2' />
 
@@ -406,7 +406,7 @@ Correr otro sistema en docker
 ### Estructura del proyecto
 
 ![<Server>](mi-imagen-genial.png)
-<img src="img/docker/project-structure.png" alt="project structure" />
+<img src="img/project-structure.png" alt="project structure" />
 
 **_DOCKERFILE_**
 

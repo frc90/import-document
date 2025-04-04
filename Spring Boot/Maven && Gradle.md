@@ -22,7 +22,7 @@
   - Crear una variable **_MAVEN_HOME_** y asignarle al valor la direccion donde se encuentra **_C:\workspace\apache-maven-3.9.9_**.
   - En la variable **path** crear una nueva y escribir lo siguiente **_%MAVEN_HOME%\bin_**
 
-  <img src="img//maven && gradle/maven_home.png" alt="Variable de entorno" />
+  <img src="img/maven_home.png" alt="Variable de entorno" />
 
 <div id='id1.2' />
 
