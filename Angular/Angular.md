@@ -11,7 +11,8 @@
    4. [ng-template #name](#id3.4)
    5. [button (click)](#id3.5)
 4. [Directivas de angular(nuevas)](#id4)
-5. [Estructura de un componente](#id4)
+5. [Estructura de un componente](#id5)
+6. [OnInit](#id6)
 
 ## Descripcion
 
@@ -228,3 +229,31 @@ export class AppComponent {
   }
 }
 ```
+
+<div id='id6' />
+
+## 6. OnInit
+
+Es un hook de ciclo de vida de **_angular_** que se ejecuta antes de cargar todas las directivas del componente.
+
+```ts
+export class CounterComponent implements OnInit {
+  counter: number = 0;
+  ngOnInit(): void {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const saved = localStorage.getItem("counter");
+      this.counter = saved !== null ? parseInt(saved) : 0;
+    } else {
+      this.counter = 0;
+    }
+    console.log("creando componente");
+  }
+
+  setCounter(): void {
+    this.counter = this.counter + 1;
+    localStorage.setItem("counter", this.counter.toString());
+  }
+}
+```
+
+**_nota:_** La condicion en el if (**_typeof window !== 'undefined' && window.localStorage_**) porque el localStorage en el SSR no esta definido y hay que validar que lo estoy usando en el navegador
