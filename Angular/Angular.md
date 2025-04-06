@@ -10,6 +10,7 @@
    3. [ngIfElse](#id3.3)
    4. [ng-template #name](#id3.4)
    5. [button (click)](#id3.5)
+4. [Directivas de angular(nuevas)](#id4)
 
 ## Descripcion
 
@@ -140,4 +141,55 @@ setVisible(): void {
 <button (click)="setVisible()">
   {{ visible ? 'Ocultar' : 'Mostrar' }}
 </button>
+```
+
+<div id='id4' />
+
+## 4. Directivas de angular(nuevas)
+
+@if
+
+```ts
+@if(condition){
+  ...
+}@else{
+  ...
+}
+```
+
+@for
+
+```ts
+@for (user of users; track $index) {
+<tr>
+  <td>{{ $index + 1 }}</td>
+  <td>{{ user }}</td>
+</tr>
+}
+```
+
+Ejemplo de uso
+
+```ts
+@if(visible){
+<h2>{{title}}</h2>
+@if (users != undefined && users.length > 0) {
+<table>
+  <thead>
+    <tr>
+      <th>name</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (user of users; track $index) {
+    <tr>
+      <td>{{ $index + 1 }}</td>
+      <td>{{ user }}</td>
+    </tr>
+    }
+  </tbody>
+</table>
+}@else {
+<p>No existe registro en el sistema!</p>
+}
 ```
