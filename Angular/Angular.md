@@ -11,6 +11,7 @@
    4. [ng-template #name](#id3.4)
    5. [button (click)](#id3.5)
 4. [Directivas de angular(nuevas)](#id4)
+5. [Estructura de un componente](#id4)
 
 ## Descripcion
 
@@ -191,5 +192,39 @@ Ejemplo de uso
 </table>
 }@else {
 <p>No existe registro en el sistema!</p>
+}
+```
+
+<div id='id5' />
+
+## 5. Estructura de un componente
+
+```ts
+// Importaciones
+import { CommonModule } from "@angular/common";
+import { Component } from "@angular/core";
+import { log } from "node:console";
+// import { RouterOutlet } from '@angular/router';
+
+// Estructura y paquetes que se importan
+@Component({
+  selector: "app-root",
+  standalone: true,
+  imports: [CommonModule], //RouterOutlet
+  templateUrl: "./app.component.html",
+  styleUrl: "./app.component.css",
+})
+
+// Exportar, funciones, variables y todo el codigo
+export class AppComponent {
+  title = "Hola mundo angular!";
+  users: string[] = ["Juan", "Pedro", "Andrez", "Jose"];
+  // users?: string[];
+
+  visible: boolean = false;
+  setVisible(): void {
+    this.visible = !this.visible;
+    console.log("Hemos hecho click en el setVisible");
+  }
 }
 ```
