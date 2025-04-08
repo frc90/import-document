@@ -13,6 +13,7 @@
 4. [Directivas de angular(nuevas)](#id4)
 5. [Estructura de un componente](#id5)
 6. [OnInit](#id6)
+7. [Output](#id7)
 
 ## Descripcion
 
@@ -257,3 +258,56 @@ export class CounterComponent implements OnInit {
 ```
 
 **_nota:_** La condicion en el if (**_typeof window !== 'undefined' && window.localStorage_**) porque el localStorage en el SSR no esta definido y hay que validar que lo estoy usando en el navegador
+
+<div id='id7' />
+
+## 7. Output
+
+Pasar valores desde el componente hijo hacia el componente padre
+
+***---componente padre---***
+```ts
+import ...
+
+@Component({
+...
+})
+export class AppComponent {
+  // variable a pasar
+  counter: number = 0
+
+  // funcion que lo ejecuta
+  setCounter (event: number): void {
+    this.counter = event
+  }
+}
+```
+***html del componente padre***
+```html
+<app-counter [title]="subTitle" (counterEmmiter)="setCounter($event)" />
+```
+
+
+***---componente hijo---***
+```ts
+// se importa de { Output } -> @angular/core
+import { Output } from '@angular/core'
+
+@Component({
+...
+})
+export class CounterComponent implements OnInit {
+  // valor a pasar 
+  counter: number = 0
+
+  // se crear un EventEmmitter
+  @Output() counterEmmiter = new EventEmitter<number>()
+
+  setCounter (): void {
+    this.counter = this.counter + 1
+    // se pasa el valor al padre a travez del -> counterEmmiter.emit()
+    this.counterEmmiter.emit(this.counter)
+  }
+}
+
+```
