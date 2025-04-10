@@ -13,7 +13,7 @@
 4. [Directivas de angular(nuevas)](#id4)
 5. [Estructura de un componente](#id5)
 6. [OnInit](#id6)
-7. [Output](#id7)
+7. [Input && Output](#id7)
 8. [Service](#id8)
 
 ## Descripcion
@@ -268,9 +268,62 @@ export class CounterComponent implements OnInit {
 
 <div id='id7' />
 
-## 7. Output
+## 7. Input && Output
 
-Pasar valores desde el componente hijo hacia el componente padre
+***@Input()*** se necesita para pasar valores de un componente padre hacia hijos
+
+Pasar valores desde el componente **padre** hacia el componente **hijo**
+
+***componente padre***
+```ts
+import { ClientComponent } from '../client/client.component'
+
+@Component({
+  ...
+  imports: [ClientComponent],
+  ...
+})
+export class InvoiceComponent implements OnInit {
+  invoice!: Invoice
+  ...
+}
+```
+***html del padre***
+
+```html
+<app-client [client]="invoice.Client" />
+```
+
+
+***componente hijo***
+
+
+```ts
+import { Component, Input } from '@angular/core'
+import { Client } from '../../models/Client'
+
+@Component({
+...
+})
+export class ClientComponent {
+  @Input() client!: Client
+}
+```
+
+***html del hijo***
+
+```html
+<div>
+  <h3>Datos del cliente</h3>
+  <p>Nombre: {{ client.name }}</p>
+</div>
+```
+
+---
+
+***@Output()*** se necesita para pasar valores de un componente hijo hacia el padre
+
+Pasar valores desde el componente **hijo** hacia el componente **padre**
 
 ***---componente padre---***
 ```ts
@@ -316,7 +369,6 @@ export class CounterComponent implements OnInit {
     this.counterEmmiter.emit(this.counter)
   }
 }
-
 ```
 
 <div id='id8' />
