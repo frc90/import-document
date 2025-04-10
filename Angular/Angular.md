@@ -14,6 +14,7 @@
 5. [Estructura de un componente](#id5)
 6. [OnInit](#id6)
 7. [Output](#id7)
+8. [Service](#id8)
 
 ## Descripcion
 
@@ -61,6 +62,12 @@ ng generate component component-name
 
 ```cmd
 ng generate directive|pipe|service|class|guard|interface|enum|module
+```
+
+- Para generar un nuevo servicio
+
+```cmd
+ng generate service services/[name]
 ```
 
 <div id='id3' />
@@ -310,4 +317,85 @@ export class CounterComponent implements OnInit {
   }
 }
 
+```
+
+<div id='id8' />
+
+## 8. Service
+
+En el framework se utiliza la arquitectura de ***MVC*** la cual esta conformada por los siguientes archivos:
+
+* controllers
+* models
+* view
+
+y con ello se crean los ***services*** para separa la logica que no es necesaria del ***controlador***, quedaria una estructura asi:
+
+***nota: Los services es para la logica de negocio. Va a tener implementaciones y consultas a APIs***
+
+Para crear un **service** se ejecuta el comando:
+
+> ng generate service [folder]/[name _of_service]
+
+***invoice.service.ts***
+```ts
+// imports
+
+// para inyectarlo por dependencias
+@Injectable({
+  providedIn: 'root'
+})
+export class InvoiceService {
+  // se cargan los datos eg: ts
+  private invoice: Invoice = invoiceData
+
+  constructor () {}
+
+  /*
+   funcion para cargar los datos, en este caso se carga por un archivo
+   pero aca generalmente se hacen las peticiones al backend
+  */
+  getInvoice (): Invoice {
+    return this.invoice
+  }
+}
+```
+
+***invoice.component.ts***
+
+```ts
+// imports necesarios
+import { Component, OnInit } from '@angular/core'
+import { InvoiceService } from '../../services/invoice.service'
+import { Invoice } from '../../models/Invoice'
+
+// descripcion del componente
+@Component({
+  ...
+})
+// se implementa el """OnInit""" para que cuando se carge el componente se obtengan los valores
+export class InvoiceComponent implements OnInit {
+  // estado de la variable
+  invoice!: Invoice
+
+  // constructor donde se hace la inyeccion de dependencia
+  constructor (private service: InvoiceService) {}
+  
+  // funcion que se ejecuta al cargarse el componente
+  ngOnInit(): void {
+    // obtencion de datos desde el servicio que se inyecto por dependencias
+    this.invoice = this.service.getInvoice()
+  }
+}
+```
+
+***app.config.ts***
+```ts
+...
+import { InvoiceService } from './services/invoice.service'
+
+export const appConfig: ApplicationConfig = {
+  // se agrega a este proveedor para inicializarlo
+  providers: [provideRouter(routes), InvoiceService]
+}
 ```
