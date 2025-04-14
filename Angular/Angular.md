@@ -15,6 +15,7 @@
 6. [OnInit](#id6)
 7. [Input && Output](#id7)
 8. [Service](#id8)
+9. [Form](#id9)
 
 ## Descripcion
 
@@ -451,3 +452,8 @@ export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), InvoiceService]
 }
 ```
+
+<div id='id9' />
+
+## 9. Form
+
