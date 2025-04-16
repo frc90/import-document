@@ -13,6 +13,15 @@
 
 ## Instalaremos las dependecias que hagan falta
 
+Links de descargas para el ***dot net 8, Visual Studio, SQL Server y SSMS***
+
+* https://visualstudio.microsoft.com/es/
+* https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+* https://www.microsoft.com/es-co/sql-server/sql-server-downloads
+* https://learn.microsoft.com/es-es/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16
+
+Instalacion de dependecias para el proyecto.
+
 <img src="img/conexion_sqlserver_asp.net.png" /> 
 
 ### Dependencias necesarias 
@@ -41,9 +50,11 @@ La descargaremos en el apartado ***Tools***
 
 ```json
 "ConnectionStrings": {
-    "connection_name":  "Server:[server_name];Database=ApiPeliculasNET8;User ID=[user_name];Password=[password];Trusted_Connection=true;TrustServerCertificate=true;MultipleActiveResultSets=true;"
+    "ConexionSql": "Server=DESKTOP-BFAMBKT;Database=ApiPeliculasNET8;User ID=sa;Password=qwerty;Trusted_Connection=true;TrustServerCertificate=true;MultipleActiveResultSets=true",
 }
 ```
+
+Server=[server_name];Database=[database_name];User ID=[sa];Password=[qwerty]
 
 String de conexin -> "Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;"
 
@@ -76,6 +87,26 @@ public class ApplicationDbContext: DbContext
 }
 ```
 
+Despues de estar todo creado y configurado bien, pues podemos abrir la consola y hacer las migraciones para crear la bd y las tablas correspondientes
+
+eg:
+<img src="img/console.png">
+
+* Aca ejecutamos el siguiente comando: ***add-migration [migration_name]*** para crear las migraciones, se crean a partir de una carpeta llamada ***Migrations***
+
+***nota:*** Los nombre de las migraciones tienen que ser bien descriptivos eg: InitialMigration, CreateProductTable, etc..
+
+>add-migration InitialMigration
+
+* En caso que haya error pues podemos remover las migraciones con este comando
+>remove-migration
+
+* Luego cuando todo este correctamente pues ejecutamos ***update-database*** para crear la base de datos y ejecutar las migraciones para crear las tablas correspondientes
+
+>update-database
+
+
+
 
 
 <div id='id3' />
@@ -90,4 +121,8 @@ Anotaciones
 ```c#
 [Key]
 public int Id { get; set; }
+[Required]
+public string Nombre { get; set; }
+[Required]
+public DateTime FechaCreacion { get; set; }
 ```
