@@ -6,6 +6,8 @@
 * [Conexion a la Base de datos](#id1)
 * [ApplicationDbContext](#id2)
 * [Models](#id3)
+* [Patron Repositorio (Repository Pattern)](#id4)
+* [Dto (Data Transfer Object)](#id5)
 
 ---
 
@@ -30,6 +32,8 @@ Instalacion de dependecias para el proyecto.
 "***Microsoft.EntityFramework.Tools***"
 
 "***Microsoft.EntityFrameworkCore***"
+
+"***AutoMapper***"
 
 La descargaremos en el apartado ***Tools***
 * ***Tools***
@@ -126,3 +130,125 @@ public string Nombre { get; set; }
 [Required]
 public DateTime FechaCreacion { get; set; }
 ```
+
+
+<div id='id4' />
+
+## Patron Repositorio (Repository Pattern)
+
+Crearemos una ***ICategoriaRepository*** para emplear correctamente el patron repository primero (***Repository Pattern***)
+
+```c#
+public interface ICategoriaRepositorio
+{
+    ICollection<Categoria> GetCategorias();
+    Categoria GetCategoria(int id);
+    bool ExisteCategoria(int id);
+    bool ExisteCategoria(string nombre);
+    bool CrearCategoria(Categoria categoria);
+    bool ActualizarCategoria(Categoria categoria);
+    bool BorrarCategoria(Categoria categoria);
+    bool Guardar();
+
+}
+```
+
+Luego implementaremos ***ICategoriaRepository*** en la clase ***CategoriaRepository*** para teminar todos los metodos
+
+```c#
+public class CartegoriaRepositorio: ICategoriaRepositorio
+{
+    private readonly ApplicationDbContext _bd;
+
+    public CartegoriaRepositorio(ApplicationDbContext db)
+    {
+        this._bd = db;
+    }
+
+    public bool ActualizarCategoria(Categoria categoria)
+    {
+        categoria.FechaCreacion = DateTime.Now;
+        _bd.Categoria.Update(categoria);
+        return Guardar();
+    }
+
+    public bool BorrarCategoria(Categoria categoria)
+    {
+        _bd.Categoria.Remove(categoria);
+        return Guardar();
+    }
+
+    public bool CrearCategoria(Categoria categoria)
+    {
+        categoria.FechaCreacion = DateTime.Now;
+        _bd.Categoria.Add(categoria);
+        return Guardar();
+    }
+
+    public bool ExisteCategoria(int id)
+    {
+        return _bd.Categoria.Any(c => c.Id == id);
+    }
+
+    public bool ExisteCategoria(string nombre)
+    {
+        bool valor = _bd.Categoria.Any(c => c.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
+        return valor;
+    }
+
+    public Categoria GetCategoria(int id)
+    {
+        return _bd.Categoria.FirstOrDefault(c => c.Id == id);
+    }
+
+    public ICollection<Categoria> GetCategorias()
+    {
+        return _bd.Categoria.OrderBy(c => c.Nombre).ToList();
+    }
+
+    public bool Guardar()
+    {
+        return _bd.SaveChanges() >= 0 ? true : false;
+    }
+}
+```
+
+<div id='id5' />
+
+## Dto (Data Transfer Object)
+
+Los ***Dto*** se crean para no exponer todos los datos del modelo al cliente
+
+```c#
+public class CategoriaDto
+{
+    public int Id { get; set; }
+    [Required(ErrorMessage = "El mensaje es obligatorio")]
+    [MaxLength(100, ErrorMessage = "El numero maximo de caracteres es de 100")]
+    public string Nombre { get; set; }
+    public DateTime FechaCreacion { get; set; }
+}
+```
+
+```c#
+public class CrearCategoriaDto
+{
+    [Required(ErrorMessage = "El mensaje es obligatorio")]
+    [MaxLength(100, ErrorMessage = "El numero maximo de caracteres es de 100")]
+    public string Nombre { get; set; }
+}
+```
+
+Creamos el ***PeliculasMapper*** para convertir ***Categoria*** a los ***Dtos*** y al revez
+
+```c#
+public class PeliculasMapper : Profile
+{
+    public PeliculasMapper()
+    {
+        CreateMap<Categoria, CategoriaDto>().ReverseMap();  
+        CreateMap<Categoria, CrearCategoriaDto>().ReverseMap();  
+    }
+}
+```
+
