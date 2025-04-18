@@ -19,3 +19,7 @@
 - 15. SQL.md
 
 <img src="img/readme/road map.gif" alt="Road map to developer"/>
+
+
+npm cache verify
+npm cache clean
