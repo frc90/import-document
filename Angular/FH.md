@@ -2,7 +2,40 @@
 
 **Índice**
 
+0. [Estructura de angular](#id0)
 1. [Signal](#id1)
+
+<div id='id0' />
+
+## Estructura de angular
+
+***Componente***
+
+<img src="img/1. componentes.png" />
+
+***Rutas***
+
+<img src="img/2. rutas.png" />
+
+***Directivas***
+
+<img src="img/3. directivas.png" />
+
+***Servicios***
+
+<img src="img/4. services.png" />
+
+***Modulos***
+
+<img src="img/5. modulos.png" />
+
+***Pipes***
+
+<img src="img/6. pipes.png" />
+
+
+
+<div id='id1' />
 
 ## Signal
 
@@ -25,5 +58,3 @@ heroDescription = computed(() => {
     return this.name().toUpperCase()
   })
 ```
-
-<div id='id1' />
