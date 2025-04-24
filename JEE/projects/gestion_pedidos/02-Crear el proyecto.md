@@ -132,13 +132,18 @@ Dentro del proyecto recién creado (con `maven-archetype-webapp`), abrí el arch
       <scope>provided</scope>
     </dependency>
     <!-- SQL Server -->
-    <dependency>
+    <!-- <dependency>
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>mssql-jdbc</artifactId>
       <version>12.4.2.jre11</version>
+    </dependency> -->
+
+    <!-- mysql -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.30</version>
     </dependency>
-
-
 
     <dependency>
       <groupId>junit</groupId>
@@ -190,7 +195,30 @@ Ubicá esta ruta en tu proyecto:
 src/main/resources/META-INF/persistence.xml
 ```
 
-Y pegá esto como contenido básico de configuración para usar SQL Server:
+***Configuracion para Mysql:***
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+    <persistence-unit name="gestionPedidosPU" transaction-type="JTA">
+        <jta-data-source>java:/GestionPedidosMySQL</jta-data-source>
+
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>
+```
+
+***Configuración para usar SQL Server:***
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -216,6 +244,12 @@ Vamos a colocarla en el paquete `model`. Esta será nuestra clase JPA (es decir,
 #### 📄 Clase `Pedido.java` (`org.frc90.api.model`):
 
 ```java
+package org.frc90.api.model;
+
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "pedidos")
 public class Pedido {
@@ -230,10 +264,19 @@ public class Pedido {
 
     private int cantidad;
 
-    @Column(name = "fecha_pedido")
-    private LocalDateTime fechaPedido;
+    @Column(name="fecha_pedido")
+    private LocalDate fechaPedido;
 
-    // Getters y Setters
+    public Pedido() {
+    }
+
+    public Pedido(Long id, String cliente, String producto, int cantidad, LocalDate fechaPedido) {
+        this.id = id;
+        this.cliente = cliente;
+        this.producto = producto;
+        this.cantidad = cantidad;
+        this.fechaPedido = fechaPedido;
+    }
 
     public Long getId() {
         return id;
@@ -267,11 +310,11 @@ public class Pedido {
         this.cantidad = cantidad;
     }
 
-    public LocalDateTime getFechaPedido() {
+    public LocalDate getFechaPedido() {
         return fechaPedido;
     }
 
-    public void setFechaPedido(LocalDateTime fechaPedido) {
+    public void setFechaPedido(LocalDate fechaPedido) {
         this.fechaPedido = fechaPedido;
     }
 }
@@ -292,33 +335,67 @@ public class Pedido {
 
 ---
 
-### ✅ Crear la clase `PedidoRepository`
+### ✅ Crear la interface `PedidoRepository`
 
 📁 Ubicación: `org.frc90.api.repository`
 
 ```java
-@Stateless
-public class PedidoRepository {
+package org.frc90.api.repository;
 
+import org.frc90.api.model.Pedido;
+
+import java.util.List;
+
+public interface PedidoRepository {
+    void guardar(Pedido pedido);
+    Pedido buscarPorId(Long id);
+    List<Pedido> listarTodos();
+    Pedido actualizar(Pedido pedido);
+    void eliminar(Long id);
+}
+```
+
+### ✅ Crear la clase `PedidoRepository`
+
+📁 Ubicación: `org.frc90.api.repository.impl`
+
+```java
+package org.frc90.api.repository.impl;
+
+import jakarta.ejb.Stateless;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import org.frc90.api.model.Pedido;
+import org.frc90.api.repository.PedidoRepository;
+
+import java.util.List;
+
+@Stateless
+public class PedidoRepositoryImpl implements PedidoRepository {
     @PersistenceContext(unitName = "gestionPedidosPU")
     private EntityManager em;
 
+    @Override
     public void guardar(Pedido pedido) {
         em.persist(pedido);
     }
 
+    @Override
     public Pedido buscarPorId(Long id) {
         return em.find(Pedido.class, id);
     }
 
+    @Override
     public List<Pedido> listarTodos() {
-        return em.createQuery("SELECT p FROM Pedido p", Pedido.class).getResultList();
+        return em.createQuery("select p from Pedido p", Pedido.class).getResultList();
     }
 
-    public void actualizar(Pedido pedido) {
-        em.merge(pedido);
+    @Override
+    public Pedido actualizar(Pedido pedido) {
+        return em.merge(pedido);
     }
 
+    @Override
     public void eliminar(Long id) {
         Pedido pedido = em.find(Pedido.class, id);
         if (pedido != null) {
@@ -345,16 +422,50 @@ public class PedidoRepository {
 ---
 
 
-### ✅ Crear la clase `PedidoService`
+### ✅ Crear la interface `PedidoService`
 
 📁 Ubicación: `org.frc90.api.service`
 
 ```java
+package org.frc90.api.service;
+
+import org.frc90.api.model.Pedido;
+
+import java.util.List;
+
+public interface PedidoService {
+    void crearPedido(Pedido pedido);
+
+    public Pedido obtenerPedido(Long id);
+
+    public List<Pedido> listarPedidos();
+
+    public void actualizarPedido(Pedido pedido);
+
+    public void eliminarPedido(Long id);
+}
+```
+
+### ✅ Crear la clase `PedidoServiceImpl`
+
+📁 Ubicación: `org.frc90.api.service.impl`
+
+```java
+package org.frc90.api.service.impl;
+
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import org.frc90.api.model.Pedido;
+import org.frc90.api.repository.PedidoRepository;
+import org.frc90.api.service.PedidoService;
+
+import java.util.List;
+
 @Stateless
 public class PedidoServiceImpl implements PedidoService {
 
     @Inject
-    private PedidoRepositoryImpl pedidoRepository;
+    private PedidoRepository pedidoRepository;
 
     @Override
     public void crearPedido(Pedido pedido) {
@@ -476,6 +587,11 @@ Debemos registrar JAX-RS en la aplicación web, para que el contenedor (WildFly)
 #### Crea una clase `ApplicationConfig` en `org.frc90.api.config`:
 
 ```java
+package org.frc90.api.config;
+
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
+
 @ApplicationPath("/api")
 public class ApplicationConfig extends Application {
     // Aquí no necesitas nada más por ahora
@@ -592,6 +708,35 @@ public class ApplicationConfig extends Application {
 > Estoy usando Jakarta EE 9.1, pero el proveedor JPA Hibernate requiere javax.persistence.* para funcionar correctamente, por eso lo ajusté así.
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Solo si se esta usando SQL Server
+
 
 ### ✅ Paso 3: Crea la base de datos en SQL Server
 
