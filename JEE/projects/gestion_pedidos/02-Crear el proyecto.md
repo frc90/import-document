@@ -506,37 +506,84 @@ public class ApplicationConfig extends Application {
 📁 Ruta: `src/main/resources/META-INF/persistence.xml`
 
 ```xml
+
+<!-- mysql -->
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
 
-<persistence-unit name="GestionPedidosPU" transaction-type="JTA">
-    <jta-data-source>java:/sqlserverDS</jta-data-source>
+    <persistence-unit name="GestionPedidosPU" transaction-type="JTA">
+        <jta-data-source>java:/GestionPedidosMySQL</jta-data-source>
+
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>
+
+<!-- mysql -->
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<persistence xmlns="https://jakarta.ee/xml/ns/persistence"-->
+<!--             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"-->
+<!--             version="3.0">-->
+
+<!--    <persistence-unit name="GestionPedidosPU" transaction-type="JTA">-->
+<!--        &lt;!&ndash; Este nombre debe coincidir con tu datasource JNDI configurado en WildFly &ndash;&gt;-->
+<!--        <jta-data-source>java:/MySQLDS</jta-data-source>-->
+
+<!--        <properties>-->
+<!--            &lt;!&ndash; Para entornos de desarrollo &ndash;&gt;-->
+<!--            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>-->
+
+<!--            &lt;!&ndash; Dialecto de Hibernate para MySQL 8 &ndash;&gt;-->
+<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>-->
+
+<!--            &lt;!&ndash; Opcional: para mostrar las queries SQL en consola &ndash;&gt;-->
+<!--            <property name="hibernate.show_sql" value="true"/>-->
+<!--            <property name="hibernate.format_sql" value="true"/>-->
+<!--        </properties>-->
+<!--    </persistence-unit>-->
+
+<!--</persistence>-->
+
+<!-- mssql -->
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<persistence xmlns="https://jakarta.ee/xml/ns/persistence"-->
+<!--             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"-->
+<!--             version="3.0">-->
+
+<!--<persistence-unit name="GestionPedidosPU" transaction-type="JTA">-->
+<!--    <jta-data-source>java:/sqlserverDS</jta-data-source>-->
 
 <!--    <properties>-->
 <!--        &lt;!&ndash; Opcionales para desarrollo &ndash;&gt;-->
 <!--        <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>-->
 <!--        <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>-->
-<!--&lt;!&ndash;        <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>&ndash;&gt;-->
-
 <!--        <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=gestion_pedidos"/>-->
-<!--        <property name="jakarta.persistence.jdbc.user" value="tu_usuario"/>-->
-<!--        <property name="jakarta.persistence.jdbc.password" value="tu_contraseña"/>-->
+<!--        <property name="jakarta.persistence.jdbc.user" value="sa"/>-->
+<!--        <property name="jakarta.persistence.jdbc.password" value="qwerty"/>-->
 <!--    </properties>-->
-    <properties>
-        <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://tu_servidor:1433;databaseName=tu_base_de_datos"/>
-        <property name="javax.persistence.jdbc.user" value="tu_usuario"/>
-        <property name="javax.persistence.jdbc.password" value="tu_contraseña"/>
-        <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
-        <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
-        <property name="hibernate.show_sql" value="true"/>
-        <property name="hibernate.format_sql" value="true"/>
-        <property name="hibernate.hbm2ddl.auto" value="update"/> <!-- O "validate", "create", "create-drop" -->
-    </properties>
-</persistence-unit>
-</persistence>
+<!--</persistence-unit>-->
+<!--</persistence>-->
+
+<!--
+        server_name=DESKTOP-BFAMBKT
+        user=sa
+        password=qwerty
+        Trusted_Connection=true
+        TrustServerCertificate=true
+        MultipleActiveResultSets=true
+
+
+-->
 ```
 
 > 🔐 Cambia `tu_usuario` y `tu_contraseña` por los datos reales de tu SQL Server.
