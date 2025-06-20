@@ -24,8 +24,9 @@ spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 spring.datasource.url=jdbc:mysql://localhost:3306/test
 spring.datasource.username=dbuser
 spring.datasource.password=dbpass
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver
-spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
 # Oracle
 spring.datasource.url=jdbc:oracle:thin:@localhost:1521:orcl
