@@ -6,6 +6,8 @@
   * [1.1 - MappedSuperclass](#id1.1)
   * [1.2 - Repositorios Genéricos](#id1.2)
   * [1.3 - Servicios Genéricos (Clase Abstracta)](#id1.3)
+  * [1.4 - Mapper base, Dtos necesarios](#id1.4)
+  * [1.5 - Controlador]
 
 
 
@@ -132,50 +134,77 @@ Crear un **servicio** genérico es un poco más manual que con los repositorios,
 
 ```java
 // Clase abstracta que contendrá la lógica CRUD genérica
-public abstract class AbstractService<T extends BaseEntity, R extends GenericRepository<T>> {
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
-    protected final R repository; // El repositorio específico para la entidad T
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-    public AbstractService(R repository) {
+public abstract class AbstractService<
+        TEntity extends AbstractEntity,
+        GRepository extends GenericRepository<TEntity>,
+        TResponse,
+        TCreateRequest,
+        TUpdateRequest
+        > {
+
+    public final GRepository repository;
+    public final IBaseMapper<TEntity, TResponse, TCreateRequest, TUpdateRequest> mapper;
+
+    protected AbstractService(GRepository repository, IBaseMapper<TEntity, TResponse, TCreateRequest, TUpdateRequest> mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Transactional(readOnly = true)
-    public List<T> findAll() {
-        return repository.findAll();
+    public List<TResponse> findAll(){
+        return repository.findAll().stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public Optional<T> findById(Long id) {
-        return repository.findById(id);
+    public Optional<TResponse> findById(Long id){
+        return repository.findById(id)
+                .map(mapper::toDto);
     }
 
     @Transactional
-    public T save(T entity) {
-        return repository.save(entity);
+    public TResponse save(TCreateRequest createRequest){
+        TEntity entityToSave = mapper.toEntity(createRequest);
+        TEntity savedEntity = repository.save(entityToSave);
+        return mapper.toDto(savedEntity);
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        repository.deleteById(id);
+    public boolean delete(Long id){
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     @Transactional(readOnly = true)
-    public Page<T> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<TResponse> findAllPageable(Pageable pageable){
+        return repository.findAll(pageable)
+                .map(mapper::toDto);
     }
 
-    // Puedes añadir más métodos comunes aquí, como actualizar (si necesitas lógica específica de actualización)
+
     @Transactional
-    public T update(Long id, T updatedEntity) {
-        return repository.findById(id).map(existingEntity -> {
-            // Aquí deberías copiar las propiedades actualizables de updatedEntity a existingEntity.
-            // Para un servicio genérico, esto puede ser complicado sin usar reflexión o una interfaz de "mapeador".
-            // Para simplicidad en este ejemplo, y porque el 'save' ya hace un 'merge', simplemente retornamos el save.
-            // En un caso real, podrías necesitar un método 'update' en la entidad o un Mapper.
-            updatedEntity.setId(id); // Asegura que el ID sea el correcto para la actualización
-            return repository.save(updatedEntity);
-        }).orElseThrow(() -> new RuntimeException("Entidad con ID " + id + " no encontrada para actualizar."));
+    public TResponse update(Long id, TUpdateRequest updateRequest){
+        TEntity existingEntity = repository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Entidad con el ID " + id + " no encontrada para actualizar"));
+
+
+        mapper.updateEntityFromDto(updateRequest, existingEntity);
+
+        TEntity updatedEntity = repository.save(existingEntity);
+        return mapper.toDto(updatedEntity);
     }
 }
 ```
@@ -184,14 +213,238 @@ public abstract class AbstractService<T extends BaseEntity, R extends GenericRep
 
 ```java
 @Service
-public class ProfesorService extends AbstractService<Profesor, ProfesorRepository> {
-
-    public ProfesorService(ProfesorRepository repository) {
-        super(repository);
+public class ItemService extends AbstractService<ItemEntity, ItemRepository, ItemResponseDTO, ItemCreateRequestDTO, ItemUpdateRequestDTO> {
+    protected ItemService(ItemRepository repository, IBaseMapper<ItemEntity, ItemResponseDTO, ItemCreateRequestDTO, ItemUpdateRequestDTO> mapper) {
+        super(repository, mapper);
     }
 
-    // Aquí puedes añadir métodos específicos de negocio para Profesor
-    // Por ejemplo:
-    // public List<Profesor> findProfesoresConMuchosEstudiantes() { ... }
+    // Aquí puedes añadir métodos de negocio específicos para Item
+    // que no sean parte del CRUD genérico, por ejemplo:
+    // @Transactional
+    // public ItemResponseDTO deactivateItem(Long itemId) {
+    //     Item item = repository.findById(itemId)
+    //             .orElseThrow(() -> new NoSuchElementException("Item not found: " + itemId));
+    //     item.setActive(false);
+    //     return mapper.toDto(repository.save(item));
+    // }
+}
+```
+
+<div id="id1.4"/>
+
+### ``1.4 - Mapper base, Dtos necesarios``
+
+Para que todo funcione correctamente hay que crear las clases correspondientes:
+
+* [IBaseMapper](#id1.4.2.1)
+* [ItemEntity](#id1.4.2.2)
+* [ItemResponseDTO](#id1.4.2.3)
+* [ItemCreateRequestDTO](#id1.4.2.4)
+* [ItemUpdateRequestDTO](#id1.4.2.5)
+* [ItemMapper](#id1.4.2.6)
+
+<div id="id1.4.2.1"/>
+
+``IBaseMapper``
+```java
+public interface IBaseMapper <TEntity, TResponse, TCreateRequest, TUpdateRequest>{
+
+    TEntity toEntity(TCreateRequest createRequest);
+
+    TResponse toDto(TEntity entity);
+
+    void updateEntityFromDto(TUpdateRequest updateRequest, TEntity entity);
+}
+```
+
+<div id="id1.4.2.2"/>
+
+Entidad de ejemplo ``ItemEntity``:
+
+```java
+@Entity
+@Table(name = "items")
+@Getter
+@Setter
+@NoArgsConstructor
+public class ItemEntity extends BaseEntity {
+
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    public ItemEntity(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+}
+```
+
+<div id="id1.4.2.3"/>
+
+``ItemResponseDTO``:
+
+```java
+@Getter
+@Setter
+public class ItemResponseDTO {
+    private Long id;
+    private String name;
+    private String description;
+    private boolean active;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+```
+
+<div id="id1.4.2.4"/>
+
+``ItemCreateRequestDTO``:
+
+```java
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class ItemCreateRequestDTO {
+    @NotBlank(message = "El nombre no puede estar vacío")
+    private String name;
+
+    private String description;
+}
+```
+
+<div id="id1.4.2.5"/>
+
+``ItemUpdateRequestDTO``:
+
+```java
+@Getter
+@Setter
+public class ItemUpdateRequestDTO {
+    private String name;
+    private String description;
+    private Boolean active;
+}
+```
+
+<div id="id1.4.2.6"/>
+
+#### Finalmente creamos el mapper
+
+`ItemMapper`
+
+```java
+import com.example.hello_world.common.mappers.IBaseMapper;
+import com.example.hello_world.items.models.ItemEntity;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ItemMapper implements IBaseMapper<ItemEntity, ItemResponseDTO, ItemCreateRequestDTO, ItemUpdateRequestDTO> {
+    @Override
+    public ItemEntity toEntity(ItemCreateRequestDTO createRequest) {
+        if (createRequest == null) {
+            return null;
+        }
+
+        ItemEntity item = new ItemEntity();
+        item.setName(createRequest.getName());
+        item.setDescription(createRequest.getDescription());
+        return item;
+    }
+
+    @Override
+    public ItemResponseDTO toDto(ItemEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        ItemResponseDTO dto = new ItemResponseDTO();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setDescription(entity.getDescription());
+        dto.setActive(entity.isActive());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
+        return dto;
+    }
+
+    @Override
+    public void updateEntityFromDto(ItemUpdateRequestDTO updateRequest, ItemEntity entity) {
+        if (updateRequest == null || entity == null) {
+            return;
+        }
+        if (updateRequest.getName() != null) {
+            entity.setName(updateRequest.getName());
+        }
+        if (updateRequest.getDescription() != null) {
+            entity.setDescription(updateRequest.getDescription());
+        }
+        if (updateRequest.getActive() != null) {
+            entity.setActive(updateRequest.getActive());
+        }
+    }
+}
+```
+
+<div id="id1.5"/>
+
+### ``1.5 - Controlador``
+
+Uso de el patron completo en un controlador
+
+```java
+@RestController
+@RequestMapping("/items")
+public class ItemController {
+
+    public final ItemService itemService;
+
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    @PostMapping
+    public ResponseEntity<ItemResponseDTO> createItem(@Valid @RequestBody ItemCreateRequestDTO createRequest) {
+        ItemResponseDTO item = itemService.save(createRequest);
+        return new ResponseEntity<>(item, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ItemResponseDTO> getItemById(@PathVariable Long id) {
+        return itemService.findById(id)
+                .map(item -> new ResponseEntity<>(item, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ItemResponseDTO>> getAllItems() {
+        List<ItemResponseDTO> items = itemService.findAll();
+        return new ResponseEntity<>(items, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ItemResponseDTO> updateItem(@PathVariable Long id, @Valid @RequestBody ItemUpdateRequestDTO updateRequest) {
+        try {
+            ItemResponseDTO updatedItem = itemService.update(id, updateRequest);
+            return new ResponseEntity<>(updatedItem, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+        if (itemService.delete(id)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }
 ```
