@@ -135,6 +135,58 @@ public class GlobalExceptionHandler {
 }
 ```
 
+**ApiResponse.java**
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ApiResponse<T> {
+    private boolean success;
+    private T data;
+    private String message;
+    private List<String> errors;
+    private int errorCode;
+    private long timestamp;
+    private String path;
+}
+```
+
+**ResponseUtil.java**
+
+```java
+public class ResponseUtil {
+
+    public static <T> ApiResponse<T> success(T data, String message, String path) {
+        ApiResponse<T> response = new ApiResponse<>();
+        response.setSuccess(true);
+        response.setMessage(message);
+        response.setData(data);
+        response.setErrors(null);
+        response.setErrorCode(0); // No error
+        response.setTimestamp(System.currentTimeMillis());
+        response.setPath(path);
+        return response;
+    }
+
+    public static <T> ApiResponse<T> error(List<String> errors, String message, int errorCode, String path) {
+        ApiResponse<T> response = new ApiResponse<>();
+        response.setSuccess(false);
+        response.setMessage(message);
+        response.setData(null);
+        response.setErrors(errors);
+        response.setErrorCode(errorCode);
+        response.setTimestamp(System.currentTimeMillis());
+        response.setPath(path);
+        return response;
+    }
+
+    public static <T> ApiResponse<T> error(String error, String message, int errorCode, String path) {
+        return error(Arrays.asList(error), message, errorCode, path);
+    }
+}
+```
+
 **Employee.java**
 
 ```java
@@ -370,54 +422,4 @@ public class EmployeeController {
 }
 ```
 
-**ApiResponse.java**
 
-```java
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ApiResponse<T> {
-    private boolean success;
-    private T data;
-    private String message;
-    private List<String> errors;
-    private int errorCode;
-    private long timestamp;
-    private String path;
-}
-```
-
-**ResponseUtil.java**
-
-```java
-public class ResponseUtil {
-
-    public static <T> ApiResponse<T> success(T data, String message, String path) {
-        ApiResponse<T> response = new ApiResponse<>();
-        response.setSuccess(true);
-        response.setMessage(message);
-        response.setData(data);
-        response.setErrors(null);
-        response.setErrorCode(0); // No error
-        response.setTimestamp(System.currentTimeMillis());
-        response.setPath(path);
-        return response;
-    }
-
-    public static <T> ApiResponse<T> error(List<String> errors, String message, int errorCode, String path) {
-        ApiResponse<T> response = new ApiResponse<>();
-        response.setSuccess(false);
-        response.setMessage(message);
-        response.setData(null);
-        response.setErrors(errors);
-        response.setErrorCode(errorCode);
-        response.setTimestamp(System.currentTimeMillis());
-        response.setPath(path);
-        return response;
-    }
-
-    public static <T> ApiResponse<T> error(String error, String message, int errorCode, String path) {
-        return error(Arrays.asList(error), message, errorCode, path);
-    }
-}
-```
