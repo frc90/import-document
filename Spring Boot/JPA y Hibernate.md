@@ -1,4 +1,4 @@
-# Docker
+# JPA Hibernate, manejo de relasiones entre tablas
 
 ## Índice
 
