@@ -4,7 +4,25 @@ Git es un sistema de control de versiones distribuido que te permite rastrear ca
 
 -----
 
-### 1\. Conceptos Fundamentales de Git
+## Index
+- [1. Conceptos Fundamentales de Git](#id1)
+- [2. Configuración Inicial de Git](#id2)
+- [3. Creando y Clonando Repositorios](#id3)
+- [4. Flujo de Trabajo Básico: Add, Commit, Push](#id4)
+- [5. Sincronización con el Repositorio Remoto](#id5)
+- [6. Ramas (Branches)](#id6)
+- [7. Ver el Historial](#id7)
+- [8. Deshacer Cambios](#id8)
+- [9. Manejo de Conflictos de Fusión (Merge Conflicts)](#id9)
+- [10. Etiquetar Versiones (Tags)](#id10)
+- [11. Otros Comandos Útiles](#id11)
+
+
+-----
+
+<div id="id1">
+
+### 1. Conceptos Fundamentales de Git
 
 Antes de sumergirnos en los comandos, entendamos algunos conceptos clave:
 
@@ -20,7 +38,9 @@ Antes de sumergirnos en los comandos, entendamos algunos conceptos clave:
 
 -----
 
-### 2\. Configuración Inicial de Git
+<div id="id2">
+
+### 2. Configuración Inicial de Git
 
 Antes de usar Git por primera vez, necesitas configurar tu identidad. Esto es importante porque cada commit que hagas incluirá esta información.
 
@@ -39,7 +59,9 @@ git config --global core.editor "vim" # Para Vim
 
 -----
 
-### 3\. Creando y Clonando Repositorios
+<div id="id3">
+
+### 3. Creando y Clonando Repositorios
 
 #### **Inicializar un nuevo repositorio local:**
 
@@ -65,7 +87,9 @@ git clone <URL_del_repositorio_remoto>
 
 -----
 
-### 4\. Flujo de Trabajo Básico: Add, Commit, Push
+<div id="id4">
+
+### 4. Flujo de Trabajo Básico: Add, Commit, Push
 
 Este es el ciclo de vida fundamental para guardar y compartir tus cambios.
 
@@ -125,7 +149,9 @@ git push -u origin <nombre_de_tu_rama>
 
 -----
 
-### 5\. Sincronización con el Repositorio Remoto
+<div id="id5">
+
+### 5. Sincronización con el Repositorio Remoto
 
 #### **Obtener los últimos cambios del remoto (Fetch):**
 
@@ -150,7 +176,9 @@ git pull origin <nombre_de_la_rama_remota>
 
 -----
 
-### 6\. Ramas (Branches)
+<div id="id6">
+
+### 6. Ramas (Branches)
 
 Las ramas son fundamentales para el flujo de trabajo en Git.
 
@@ -213,7 +241,9 @@ git merge <rama_origen> # Ejemplo: git merge feature/nueva-funcionalidad
 
 -----
 
-### 7\. Ver el Historial
+<div id="id7">
+
+### 7. Ver el Historial
 
 #### **Ver el historial de commits:**
 
@@ -233,7 +263,9 @@ git show <hash_del_commit>
 
 -----
 
-### 8\. Deshacer Cambios
+<div id="id8">
+
+### 8. Deshacer Cambios
 
 Deshacer acciones en Git puede ser un poco complejo, ¡úsalo con cuidado\!
 
@@ -292,7 +324,9 @@ git restore --staged .
 
 -----
 
-### 9\. Manejo de Conflictos de Fusión (Merge Conflicts)
+<div id="id9">
+
+### 9. Manejo de Conflictos de Fusión (Merge Conflicts)
 
 Los conflictos ocurren cuando Git no sabe cómo combinar automáticamente los cambios de dos ramas (por ejemplo, si ambos modificaron la misma línea en el mismo archivo).
 
@@ -320,7 +354,9 @@ Los conflictos ocurren cuando Git no sabe cómo combinar automáticamente los ca
 
 -----
 
-### 10\. Etiquetar Versiones (Tags)
+<div id="id10">
+
+### 10. Etiquetar Versiones (Tags)
 
 Los tags se usan para marcar puntos específicos en el historial como importantes (por ejemplo, versiones de lanzamiento).
 
@@ -346,7 +382,9 @@ git push origin --delete v1.0.0
 
 -----
 
-### 11\. Otros Comandos Útiles
+<div id="id11">
+
+### 11. Otros Comandos Útiles
 
   * **`git status -s` o `git status --short`**: Versión corta del estado.
   * **`git diff`**: Muestra las diferencias entre el directorio de trabajo y el Staging Area, o entre el Staging Area y el último commit.
