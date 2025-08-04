@@ -423,3 +423,46 @@ public class EmployeeController {
 ```
 
 
+`BindingResult` se considera una redundancia en tus validaciones porque Spring ya tiene un mecanismo más robusto para manejar los errores de validación, que es el **`GlobalExceptionHandler`**.
+
+Cuando utilizas `@Valid` en un DTO, Spring valida automáticamente los campos. Si hay errores, tiene dos opciones:
+
+1.  **Si usas `BindingResult`**: Spring almacena todos los errores en ese objeto. Tu código luego tiene que verificar manualmente `bindingResult.hasErrors()` y decidir qué hacer con esos errores (por ejemplo, devolver un `400 Bad Request`).
+2.  **Si no usas `BindingResult`**: Spring lanza una excepción llamada `MethodArgumentNotValidException` tan pronto como encuentra un error de validación.
+
+Aquí es donde entra en juego el `GlobalExceptionHandler`.
+
+-----
+
+## Cómo `GlobalExceptionHandler` Captura las Validaciones
+
+Tu `GlobalExceptionHandler` está diseñado con la anotación `@ControllerAdvice`, que le permite interceptar excepciones lanzadas por cualquier controlador en tu aplicación. Es como un pararrayos para los errores.
+
+El truco está en el método que creaste para manejar las validaciones:
+
+```java
+@ExceptionHandler(MethodArgumentNotValidException.class)
+public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    // ... tu lógica para extraer errores y crear la respuesta
+}
+```
+
+  * **`@ExceptionHandler(MethodArgumentNotValidException.class)`**: Esta anotación le dice a Spring que este método debe ser ejecutado **solo** cuando se lanza una excepción de tipo `MethodArgumentNotValidException`.
+  * **Sin `BindingResult` en el Controlador**: Cuando eliminaste `BindingResult` de tu controlador, obligaste a Spring a lanzar esta excepción en caso de que la validación fallara.
+
+### El Flujo de la Validación
+
+1.  El cliente hace una petición `POST` a tu endpoint `/events` con un DTO inválido (por ejemplo, `name` es nulo).
+2.  Spring recibe la petición y, gracias a la anotación `@Valid` en el DTO, comienza a validar los campos.
+3.  Spring detecta que el campo `name` es `null`, lo cual viola la restricción `@NotNull`.
+4.  Como **no hay un `BindingResult`** en la firma del método del controlador, Spring no almacena el error. En su lugar, lanza inmediatamente una excepción `MethodArgumentNotValidException`.
+5.  Tu `GlobalExceptionHandler` intercepta esta excepción gracias a la anotación `@ExceptionHandler`.
+6.  El método `handleValidationExceptions` se ejecuta, toma la excepción (`ex`), extrae los errores (`ex.getBindingResult().getFieldErrors()`), y construye una respuesta JSON con el código de estado `400 Bad Request`.
+7.  El cliente recibe la respuesta de error con los detalles de los campos que fallaron.
+
+### ¿Por qué esta forma es mejor?
+
+  * **Menos código en los controladores**: Tus controladores se mantienen limpios y solo se encargan de la lógica de negocio. No tienen que preocuparse por `if (bindingResult.hasErrors())`.
+  * **Manejo centralizado de errores**: Toda la lógica para manejar las validaciones (y cualquier otra excepción) está en un solo lugar. Si necesitas cambiar el formato de los errores, solo lo haces en el `GlobalExceptionHandler`, y el cambio se aplica a toda la aplicación.
+  * **Consistencia**: Todas las validaciones de tu API devuelven el mismo formato de respuesta de error, lo que facilita que los clientes de tu API (como una aplicación frontend) manejen los errores de manera uniforme.
+
