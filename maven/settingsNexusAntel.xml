@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <!-- Repositorio local donde Maven guarda dependencias -->
+  <localRepository>C:\DiscoD\maven\.m2\repositoryNuevo</localRepository>
+
+  <!-- ============================================= -->
+  <!-- ================ SERVERS ==================== -->
+  <!-- ============================================= -->
+  <servers>
+    <!-- Credenciales para repos Nexus internos -->
+    <server>
+      <id>ecom-repo</id>
+      <username>CSS_Dev_eCommerce</username>
+      <password>9yny3LT1dslRHr70</password>
+    </server>
+
+    <server>
+      <id>ecom-repo-snapshot</id>
+      <username>CSS_Dev_eCommerce</username>
+      <password>9yny3LT1dslRHr70</password>
+    </server>
+
+    <server>
+      <id>portal</id>
+      <username>portal</username>
+      <password>portal328</password>
+    </server>
+  </servers>
+
+  <!-- ============================================= -->
+  <!-- ================ MIRRORS ==================== -->
+  <!-- ============================================= -->
+  <mirrors>
+    <!-- Nexus interno: solo cubre internal-repos, NO todo (*) -->
+    <mirror>
+      <id>nexus-garq</id>
+      <mirrorOf>internal-repos</mirrorOf>
+      <url>http://vmlx-garq-prod:8081/nexus/content/groups/public/</url>
+    </mirror>
+
+    <!-- Portal mirror -->
+    <mirror>
+      <id>portal-mirror</id>
+      <mirrorOf>portal</mirrorOf>
+      <url>http://vmlx-garq-prod:8081/nexus/content/repositories/portal/</url>
+    </mirror>
+
+    <!-- E-commerce snapshot mirror -->
+    <mirror>
+      <id>ecom-repo-snapshot-mirror</id>
+      <mirrorOf>ecom-repo-snapshot</mirrorOf>
+      <url>https://nexus.in.iantel.com.uy/repository/ecommerce-repo-snapshot/</url>
+    </mirror>
+  </mirrors>
+
+  <!-- ============================================= -->
+  <!-- ================ PROFILES ================== -->
+  <!-- ============================================= -->
+  <profiles>
+    <!-- Portal -->
+    <profile>
+      <id>portal</id>
+      <repositories>
+        <repository>
+          <id>portal</id>
+          <url>http://vmlx-garq-prod:8081/nexus/content/repositories/portal/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+
+    <!-- E-commerce -->
+    <profile>
+      <id>ecommerce-profile</id>
+      <repositories>
+        <repository>
+          <id>ecom-repo</id>
+          <url>https://nexus.in.iantel.com.uy/repository/ecommerce-repo/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>ecom-repo-snapshot</id>
+          <url>https://nexus.in.iantel.com.uy/repository/ecommerce-repo-snapshot/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+
+    <!-- Maven Central: necesario para Spring Boot -->
+    <profile>
+      <id>central-repo</id>
+      <repositories>
+        <repository>
+          <id>central</id>
+          <url>https://repo.maven.apache.org/maven2</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <!-- ============================================= -->
+  <!-- ============= ACTIVE PROFILES ============== -->
+  <!-- ============================================= -->
+  <activeProfiles>
+    <activeProfile>portal</activeProfile>
+    <activeProfile>ecommerce-profile</activeProfile>
+    <activeProfile>central-repo</activeProfile>
+  </activeProfiles>
+</settings>
